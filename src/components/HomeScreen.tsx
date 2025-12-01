@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import svgPaths from '../imports/svg-xwv6wzkpqg';
+import svgPaths from '../imports/svg-7nfdeea9xv';
 import imgImage1 from "figma:asset/e2e06a9e7dd6f12d8dec5c7cce0f96d75cdac16f.png";
 import imgImage2 from "figma:asset/86af9e1cd21eb9f2c0fcaaf5b2d58f0c9bb8e2d4.png";
 import imgImage8 from "figma:asset/a2e96c0cdc74e5e7f9b31068a3a9de15f6f68c9c.png";
@@ -17,6 +17,7 @@ interface HomeScreenProps {
   onCategoryClick: (categoryName: string) => void;
   onCategoriesClick: () => void;
   onBrandsClick?: () => void;
+  onBrandClick?: (brandName: string) => void; // Added brand click handler
   onLocationClick: () => void;
   selectedAddress: string;
   onNavigateCart?: () => void;
@@ -401,7 +402,7 @@ function Carousel1() {
   );
 }
 
-function Row1({ onBrandsClick, onBrandsSpeakerClick }: { onBrandsClick: () => void; onBrandsSpeakerClick: () => void }) {
+function Row1({ onBrandsClick, onBrandsSpeakerClick, onBrandClick }: { onBrandsClick: () => void; onBrandsSpeakerClick: () => void; onBrandClick?: (brandName: string) => void }) {
   const { t, language } = useLanguage();
   
   return (
@@ -411,15 +412,15 @@ function Row1({ onBrandsClick, onBrandsSpeakerClick }: { onBrandsClick: () => vo
         <div className="flex flex-col font-['Inter:Semi_Bold',sans-serif] font-semibold justify-center leading-[0] not-italic relative shrink-0 text-[16px] text-black text-nowrap tracking-[-0.32px]">
           <p className="leading-[1.4] whitespace-pre">{t('shopByBrand')}</p>
         </div>
-        <button onClick={onBrandsClick} className="cursor-pointer bg-transparent border-none p-0">
-          <Group3 />
-        </button>
         <button 
           onClick={onBrandsSpeakerClick}
           className="relative shrink-0 size-[16px] cursor-pointer bg-transparent border-none p-0"
           aria-label="Read shop by brand text"
         >
           <img alt="" className="absolute inset-0 max-w-none object-50%-50% object-cover pointer-events-none size-full" src={imgImage32} />
+        </button>
+        <button onClick={onBrandsClick} className="cursor-pointer bg-transparent border-none p-0">
+          <Group3 />
         </button>
       </div>
 
@@ -430,9 +431,10 @@ function Row1({ onBrandsClick, onBrandsSpeakerClick }: { onBrandsClick: () => vo
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
           {brands && brands.length > 0 && brands.map((brand) => (
-            <div
+            <button
               key={brand.id}
-              className="flex flex-col items-center gap-2 min-w-[120px] shrink-0 snap-center"
+              onClick={() => onBrandClick?.(brand.name)}
+              className="flex flex-col items-center gap-2 min-w-[120px] shrink-0 snap-center cursor-pointer bg-transparent border-none p-0"
             >
               <div className="w-[120px] h-[120px] flex items-center justify-center rounded-lg bg-gray-50 overflow-hidden border border-gray-200">
                 <img 
@@ -444,7 +446,7 @@ function Row1({ onBrandsClick, onBrandsSpeakerClick }: { onBrandsClick: () => vo
               <p className="font-['Inter:Regular',sans-serif] text-[14px] text-black text-center leading-tight max-w-[120px]">
                 {language === 'ur' ? brand.nameUrdu : brand.name}
               </p>
-            </div>
+            </button>
           ))}
         </div>
       </div>
@@ -503,7 +505,7 @@ function Row2() {
   );
 }
 
-export default function HomeScreen({ onCategoryClick, onCategoriesClick, onBrandsClick, onLocationClick, selectedAddress, onNavigateCart, onNavigateNotifications, onNavigateAccount, onNavigateSearch }: HomeScreenProps) {
+export default function HomeScreen({ onCategoryClick, onCategoriesClick, onBrandsClick, onBrandClick, onLocationClick, selectedAddress, onNavigateCart, onNavigateNotifications, onNavigateAccount, onNavigateSearch }: HomeScreenProps) {
   const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
 
   const nextBanner = () => {
@@ -567,13 +569,18 @@ export default function HomeScreen({ onCategoryClick, onCategoriesClick, onBrand
   };
 
   return (
-    <div className="bg-white relative size-full overflow-y-auto" data-name="Home Screen" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
-      <style dangerouslySetInnerHTML={{ __html: `
-        [data-name="Home Screen"]::-webkit-scrollbar {
-          display: none;
-        }
-      `}} />
-      <div className="relative min-h-[950px]">
+    <div className="bg-white relative size-full overflow-hidden" data-name="Home Screen">
+      {/* Scrollable Content Area */}
+      <div 
+        className="absolute inset-0 overflow-y-auto pb-[116px]" 
+        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+      >
+        <style dangerouslySetInnerHTML={{ __html: `
+          [data-name="Home Screen"] > div::-webkit-scrollbar {
+            display: none;
+          }
+        `}} />
+        <div className="relative min-h-[950px]">
       {/* Yellow Background Header */}
       <div className="absolute top-0 left-0 right-0 h-[140px] bg-[#ffd037] rounded-b-[20px]" />
       
@@ -736,20 +743,22 @@ export default function HomeScreen({ onCategoryClick, onCategoriesClick, onBrand
       <Row1 
         onBrandsClick={onBrandsClick || onCategoriesClick}
         onBrandsSpeakerClick={handleBrandsSpeakerClick}
+        onBrandClick={onBrandClick}
       />
 
-      {/* Additional Section */}
-      <Row2 />
-
-      {/* Bottom Navigation */}
-      <BottomNavigation
-        currentPage="home"
-        onNavigateHome={() => {}}
-        onNavigateSearch={onNavigateSearch || (() => {})}
-        onNavigateCart={onNavigateCart || (() => {})}
-        onNavigateNotifications={onNavigateNotifications || (() => {})}
-        onNavigateAccount={onNavigateAccount || (() => {})}
-      />
+      </div>
+      </div>
+      
+      {/* Bottom Navigation - Fixed at bottom of parent container */}
+      <div className="absolute bottom-0 left-0 right-0 z-50">
+        <BottomNavigation
+          currentPage="home"
+          onNavigateHome={() => {}}
+          onNavigateSearch={onNavigateSearch || (() => {})}
+          onNavigateCart={onNavigateCart || (() => {})}
+          onNavigateNotifications={onNavigateNotifications || (() => {})}
+          onNavigateAccount={onNavigateAccount || (() => {})}
+        />
       </div>
     </div>
   );

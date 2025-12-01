@@ -1,4 +1,8 @@
 
+  # Kravemart Grocery App Screens
+
+  This is a code bundle for Kravemart Grocery App Screens. The original project is available at https://www.figma.com/design/QNx6KRn1snKVVkgyp8Rkx6/Kravemart-Grocery-App-Screens.
+
   ## Running the code
 
   Run `npm i` to install the dependencies.

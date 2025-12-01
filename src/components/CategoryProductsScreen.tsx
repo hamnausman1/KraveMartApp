@@ -10,6 +10,7 @@ import Toast from './Toast';
 import { BottomNav } from './BottomNav';
 import { speak } from '../utils/textToSpeech';
 import { ttsMessages } from '../utils/ttsMessages';
+import { ArrowLeft } from 'react-feather';
 
 function Group3() {
   return (
@@ -122,37 +123,45 @@ function ProductCard({ product, imageUrl, onAddToCart, onProductClick }: Product
   const { language } = useLanguage();
   
   return (
-    <div className="flex flex-col bg-white rounded-[16px] p-4 shadow-sm">
-      <button 
-        onClick={onProductClick}
-        className="relative w-full h-[130px] bg-[#f0f1f2] rounded-[8px] mb-3 overflow-hidden cursor-pointer border-none p-0"
-      >
-        <img
-          src={imageUrl}
-          alt={product.name}
-          className="w-full h-full object-contain"
-        />
-      </button>
-      <button onClick={onProductClick} className="text-left cursor-pointer bg-transparent border-none p-0">
-        <p className="font-['Poppins:Medium',sans-serif] text-[14px] text-[#37474f] leading-[1.3] mb-1 min-h-[40px]">
-          {language === 'urdu' && product.nameUrdu ? product.nameUrdu : product.name}
+    <div 
+      className="bg-white rounded-[12px] p-4 w-[164px] flex-shrink-0 cursor-pointer hover:shadow-md transition-shadow"
+      style={{ minWidth: '164px' }}
+    >
+      <div onClick={onProductClick}>
+        <div className="w-full h-[120px] mb-3 rounded-[8px] overflow-hidden bg-gray-100">
+          <img
+            src={imageUrl}
+            alt={product.name}
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <p className="font-['Poppins:SemiBold',sans-serif] text-[14px] text-[#37474f] mb-2 line-clamp-2 h-[40px]">
+          {language === 'urdu' ? product.nameUrdu : product.name}
         </p>
-      </button>
-      <p className="font-['Poppins:Regular',sans-serif] text-[12px] text-[#37474f] opacity-60 mb-2">
-        {language === 'urdu' && product.descriptionUrdu ? product.descriptionUrdu : product.description}
-      </p>
-      <p className="font-['Poppins:SemiBold',sans-serif] text-[18px] text-[#f37a20] mb-3">
-        Rs. {product.price}
+        <div className="flex items-center gap-2 mb-3">
+          <span className="font-['Poppins:SemiBold',sans-serif] text-[18px] text-[#f37a20]">
+            Rs {product.price}
+          </span>
+          {product.originalPrice && (
+            <span className="font-['Poppins:Regular',sans-serif] text-[14px] text-[#9e9e9e] line-through">
+              Rs {product.originalPrice}
+            </span>
+          )}
+        </div>
+      </div>
+      <p className="font-['Poppins:Regular',sans-serif] text-[12px] text-[#9e9e9e] mb-3">
+        {language === 'urdu' ? product.weightUrdu : product.weight}
       </p>
       <button
         onClick={onAddToCart}
         className="flex items-center justify-center gap-2 bg-[#ffd037] rounded-[8px] h-[44px] w-full cursor-pointer hover:bg-[#ffc020] transition-colors border-none"
       >
-        <div className="size-[18px]">
-          <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 24 24">
-            <g>
-              <path clipRule="evenodd" d={svgPaths.pc6ed00} fill="var(--fill-0, black)" fillRule="evenodd" />
-            </g>
+        <div className="size-[20px]">
+          <svg className="block size-full" fill="none" viewBox="0 0 24 24">
+            <path 
+              d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z" 
+              fill="#37474F" 
+            />
           </svg>
         </div>
         <p className="font-['Poppins:Medium',sans-serif] text-[14px] text-black">
@@ -233,14 +242,10 @@ export default function CategoryProductsScreen({
       <div className="absolute left-0 right-0 top-[44px] h-[44px] flex items-center justify-center z-20">
         <button
           onClick={onBack}
-          className="absolute left-[16px] size-[24px] cursor-pointer bg-transparent border-none p-0"
+          className="absolute left-[16px] bg-white rounded-full p-2 shadow-md cursor-pointer border-none hover:bg-gray-100 transition-colors"
           aria-label="Go back"
         >
-          <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 24 24">
-            <g>
-              <path d={svgPaths.p6a58300} fill="var(--fill-0, #37474F)" />
-            </g>
-          </svg>
+          <ArrowLeft className="w-[24px] h-[24px] text-[#37474f]" strokeWidth={2.5} />
         </button>
         <p className="font-['Poppins:SemiBold',sans-serif] text-[20px] text-[#37474f] truncate max-w-[250px]">
           {getCategoryNameTranslated(categoryName)}

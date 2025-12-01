@@ -5,6 +5,8 @@ import imgImage44 from "figma:asset/d1a81c329997884332855549bf84957646c3655b.png
 import imgMap from "figma:asset/29ed300ccff6824a03df80ebe2d191d2ea97bba5.png";
 import { imgMain1, imgSurfaceColor } from "../imports/svg-c7x2m";
 import { useAddresses } from "../contexts/AddressContext";
+import { useLanguage } from '../contexts/LanguageContext';
+import { speak } from '../utils/textToSpeech';
 
 function Group10() {
   return (
@@ -273,6 +275,7 @@ export default function AddAddress({ onBack, editId }: AddAddressProps) {
   const { addAddress, updateAddress, getAddress } = useAddresses();
   const [address, setAddress] = useState('');
   const [selectedLabel, setSelectedLabel] = useState('Home');
+  const { language } = useLanguage();
 
   useEffect(() => {
     if (editId) {
@@ -305,6 +308,14 @@ export default function AddAddress({ onBack, editId }: AddAddressProps) {
     onBack();
   };
 
+  const handleSpeakerClick = () => {
+    const text = language === 'english'
+      ? `${editId ? 'Edit' : 'Add'} Address. Enter your address in the search field. Select a label: Home, Work, or Other. Then save your location. Currently selected label is ${selectedLabel}. ${address ? `Address is ${address}` : 'No address entered yet'}.`
+      : `${editId ? 'پتہ ترمیم کریں' : 'پتہ شامل کریں'}۔ تلاش کے خانے میں اپنا پتہ درج کریں۔ لیبل منتخب کریں: گھر، دفتر، یا دیگر۔ پھر اپنا مقام محفوظ کریں۔ فی وقت منتخب شدہ لیبل ${selectedLabel} ہے۔ ${address ? `پتہ ${address} ہے` : 'ابھی تک کوئی پتہ درج نہیں ہوا'}۔`;
+    
+    speak(text, language);
+  };
+
   return (
     <div className="bg-white relative size-full" data-name="Select Location home">
       <MaskGroup />
@@ -317,6 +328,16 @@ export default function AddAddress({ onBack, editId }: AddAddressProps) {
       <BarsHomeIndicatorIPhoneLightPortrait />
       <NavigationArrowBackward onClick={onBack} />
       <MapsPin24Px />
+      
+      {/* Speaker Icon */}
+      <button 
+        onClick={handleSpeakerClick}
+        className="absolute left-[342px] size-[14px] top-[68px] cursor-pointer bg-transparent border-none p-0 z-30"
+        aria-label="Read address information"
+      >
+        <img alt="" className="absolute inset-0 max-w-none object-50%-50% object-cover pointer-events-none size-full" src={imgImage44} />
+      </button>
+      
       <AddressForm
         address={address}
         selectedLabel={selectedLabel}

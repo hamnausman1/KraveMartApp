@@ -6,7 +6,7 @@ import { imgMain1 } from "../imports/svg-mxxjq";
 import { useCart } from '../contexts/CartContext';
 import { useAddress } from '../contexts/AddressContext';
 import { useOrders } from '../contexts/OrderContext';
-import { Trash2, Plus, Minus } from 'lucide-react';
+import { Trash2, Plus, Minus, ArrowLeft } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useState } from 'react';
 import { toast } from 'sonner@2.0.3';
@@ -129,6 +129,28 @@ export default function CartScreen({
     '4 PM - 6 PM',
     '6 PM - 8 PM'
   ];
+
+  // Generate next 7 days for date selection
+  const getNextDays = (count: number) => {
+    const days = [];
+    const today = new Date();
+    for (let i = 0; i < count; i++) {
+      const date = new Date(today);
+      date.setDate(today.getDate() + i);
+      const dayName = date.toLocaleDateString('en-US', { weekday: 'short' });
+      const dayNum = date.getDate();
+      const monthName = date.toLocaleDateString('en-US', { month: 'short' });
+      days.push({
+        label: `${dayName}, ${monthName} ${dayNum}`,
+        value: `${monthName} ${dayNum}`,
+        fullDate: date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+      });
+    }
+    return days;
+  };
+
+  const availableDates = getNextDays(7);
+  const [showDatePicker, setShowDatePicker] = useState(false);
   
   // Get payment method display name
   const getPaymentMethodName = (method: string) => {
@@ -145,7 +167,7 @@ export default function CartScreen({
   const handleSpeakerClick = () => {
     const text = language === 'english' 
       ? "This is your shopping cart. You can review items, select delivery time and address, choose payment method, and place your order."
-      : "یہ آپ کی شاپنگ کارٹ ہے۔ آپ اشیاء کا جائزہ لے سکتے ہیں، ڈیلیوری کا وقت اور پتہ منتخب کر سکتے ہیں، ادائیگی کا طریقہ منتخب کر سکتے ہیں، اور اپنا آرڈر دے سکتے ہیں۔";
+      : "یہ آپ کی شاپنگ کارٹ ہے۔ آپ اشیاء کا جائزہ لے سکتے ہیں، ڈیلیوری کا وقت اور پتہ منتخب کر سکتے ہیں، ادائیگی  طریقہ منتخب کر سکتے ہیں، اور اپنا آرڈر دے سکتے ہیں۔";
     speak(text, language);
   };
 
@@ -205,10 +227,12 @@ export default function CartScreen({
       {/* Header */}
       <div className="absolute h-[88px] left-0 top-0 w-[375px] z-10">
         <p className="absolute font-['Poppins:SemiBold',sans-serif] leading-[normal] left-[58px] not-italic text-[#37474f] text-[20px] text-nowrap top-[47.32px] whitespace-pre">{t('myCart')}</p>
-        <button onClick={onBack} className="absolute cursor-pointer left-[16px] size-[24px] top-[47.32px] z-20">
-          <svg className="block size-full" fill="none" viewBox="0 0 24 24">
-            <path d={svgPaths.p6a58300} fill="#37474F" />
-          </svg>
+        <button 
+          onClick={onBack} 
+          className="absolute left-[16px] top-[47.32px] z-50 bg-white rounded-full p-1 shadow-lg border-none cursor-pointer hover:bg-gray-100 transition-colors w-[32px] h-[32px] flex items-center justify-center"
+          aria-label="Go back"
+        >
+          <ArrowLeft className="w-[20px] h-[20px] text-[#37474F]" />
         </button>
         <button 
           onClick={handleSpeakerClick}
@@ -271,7 +295,10 @@ export default function CartScreen({
         <div className="mb-6">
           <p className="font-['Poppins:SemiBold',sans-serif] text-[#37474f] text-[14px] mb-3">{t('expectedDateTime')}</p>
           
-          <button className="w-full bg-white rounded-[12px] h-[48px] px-4 flex items-center justify-between mb-3">
+          <button 
+            onClick={() => setShowDatePicker(!showDatePicker)}
+            className="w-full bg-white rounded-[12px] h-[48px] px-4 flex items-center justify-between mb-3"
+          >
             <div className="flex items-center gap-2">
               <svg className="size-[24px]" fill="none" viewBox="0 0 24 24">
                 <path d="M19 4h-1V2h-2v2H8V2H6v2H5c-1.11 0-1.99.9-1.99 2L3 20c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 16H5V10h14v10zM5 8V6h14v2H5zm2 4h10v2H7v-2z" fill="#37474F" />
@@ -279,9 +306,31 @@ export default function CartScreen({
               <span className="font-['Poppins:Regular',sans-serif] text-[#37474f] text-[14px]">{selectedDate === 'Select Date' ? t('selectDate') : selectedDate}</span>
             </div>
             <svg className="size-[24px]" fill="none" viewBox="0 0 24 24">
-              <path d="M7 10l5 5 5-5z" fill="#37474F" />
+              <path d={showDatePicker ? "M7 14l5-5 5 5z" : "M7 10l5 5 5-5z"} fill="#37474F" />
             </svg>
           </button>
+
+          {/* Date Picker Dropdown */}
+          {showDatePicker && (
+            <div className="mb-3 bg-white rounded-[12px] p-3 max-h-[200px] overflow-y-auto">
+              {availableDates.map((date) => (
+                <button
+                  key={date.value}
+                  onClick={() => {
+                    setSelectedDate(date.value);
+                    setShowDatePicker(false);
+                  }}
+                  className={`w-full text-left px-4 py-3 rounded-[8px] mb-2 font-['Poppins:Medium',sans-serif] text-[14px] ${
+                    selectedDate === date.value
+                      ? 'bg-[#FFD037] text-[#37474f]'
+                      : 'bg-[#F5F5F5] text-[#37474f] hover:bg-[#E8E8E8]'
+                  }`}
+                >
+                  {date.label}
+                </button>
+              ))}
+            </div>
+          )}
 
           <div className="flex gap-2 overflow-x-auto pb-2">
             {timeSlots.map((slot) => (

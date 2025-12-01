@@ -6,6 +6,7 @@ import { imgMain1 } from "../imports/svg-g538o";
 import { useLanguage } from '../contexts/LanguageContext';
 import BottomNavigation from './BottomNavigation';
 import { speak } from '../utils/textToSpeech';
+import { ArrowLeft } from 'lucide-react';
 
 interface NotificationsScreenProps {
   onBack: () => void;
@@ -143,7 +144,7 @@ function NotificationItem({ notification, onClick, index }: NotificationItemProp
     ? 'call'
     : 'star';
 
-  const topPosition = 108 + (index * 111);
+  const topPosition = 0 + (index * 111);
   const isUnread = !notification.isRead;
 
   return (
@@ -153,10 +154,10 @@ function NotificationItem({ notification, onClick, index }: NotificationItemProp
       style={{ top: `${topPosition}px` }}
       data-name={isUnread ? "notifications/unread" : "notifications/read"}
     >
-      <p className="absolute font-['Poppins:Medium',sans-serif] inset-[12.63%_65.01%_62.11%_5.83%] leading-[normal] not-italic text-[#37474f] text-[16px] text-nowrap tracking-[0.6px] whitespace-pre">{notification.orderId}</p>
-      <p className="absolute font-['Poppins:Regular',sans-serif] inset-[38.95%_23.32%_24.21%_5.83%] leading-[normal] not-italic text-[#37474f] text-[14px]">{notification.message}</p>
+      <p className="absolute font-['Poppins:Medium',sans-serif] left-[20px] top-[12px] leading-[normal] not-italic text-[#37474f] text-[16px] tracking-[0.6px] text-left">{notification.orderId}</p>
+      <p className="absolute font-['Poppins:Regular',sans-serif] left-[20px] top-[37px] right-[80px] leading-[normal] not-italic text-[#37474f] text-[14px] text-left">{notification.message}</p>
       
-      <div className="absolute inset-[38.95%_6.12%_23.16%_83.38%]">
+      <div className="absolute right-[21px] top-[37px] w-[36px] h-[36px]">
         <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 36 36">
           <g id="Group 94">
             <circle cx="18" cy="18" fill={iconColor} id="Ellipse 3" r="18" />
@@ -173,7 +174,7 @@ function NotificationItem({ notification, onClick, index }: NotificationItemProp
         </svg>
       </div>
 
-      <p className="absolute font-['Poppins:Regular',sans-serif] inset-[14.74%_6.12%_67.37%_81.92%] leading-[normal] not-italic text-[#37474f] text-[11px] text-nowrap text-right whitespace-pre">{notification.time}</p>
+      <p className="absolute font-['Poppins:Regular',sans-serif] right-[21px] top-[14px] leading-[normal] not-italic text-[#37474f] text-[11px] text-right">{notification.time}</p>
       
       {index < 4 && (
         <div className="absolute bottom-[-1.05%] left-0 right-0 top-full" data-name="Line">
@@ -257,12 +258,12 @@ export default function NotificationsScreen({ onBack, onNavigateHome, onNavigate
       {/* Header */}
       <div className="absolute h-[88px] left-0 top-0 w-[375px] z-10" data-name="components/mobile/appbar/secondery">
         <p className="absolute font-['Poppins:SemiBold',sans-serif] leading-[normal] left-[58px] not-italic text-[#37474f] text-[20px] text-nowrap top-[47.32px] whitespace-pre">{t('notifications')}</p>
-        <button onClick={onBack} className="absolute block cursor-pointer left-[16px] size-[24px] top-[47.32px] z-20" data-name="navigation/arrow_backward_24px">
-          <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 24 24">
-            <g id="navigation/arrow_backward_24px">
-              <path d={svgPaths.p6a58300} fill="var(--fill-0, #37474F)" id="icon/navigation/arrow_backward_24px" />
-            </g>
-          </svg>
+        <button 
+          onClick={onBack} 
+          className="absolute left-[16px] top-[47.32px] z-50 bg-white rounded-full p-1 shadow-lg border-none cursor-pointer hover:bg-gray-100 transition-colors w-[32px] h-[32px] flex items-center justify-center" 
+          aria-label="Go back"
+        >
+          <ArrowLeft className="block w-[20px] h-[20px]" fill="#37474F" />
         </button>
         <button 
           onClick={handleSpeakerClick}
@@ -274,7 +275,7 @@ export default function NotificationsScreen({ onBack, onNavigateHome, onNavigate
       </div>
 
       {/* Notifications List */}
-      <div className="absolute left-0 right-0 top-[108px] bottom-[116px] overflow-y-auto">
+      <div className="absolute left-0 right-0 top-[88px] bottom-[116px] overflow-y-auto">
         {notifications.map((notification, index) => (
           <NotificationItem
             key={notification.id}

@@ -1,8 +1,9 @@
-import Category from '../imports/Category';
-import { speak } from '../utils/textToSpeech';
+import CategoryComponent from '../imports/Category';
 import { ttsMessages } from '../utils/ttsMessages';
+import { speak } from '../utils/textToSpeech';
 import { useLanguage } from '../contexts/LanguageContext';
 import BottomNavigation from './BottomNavigation';
+import { ArrowLeft } from 'lucide-react';
 
 interface CategoryScreenProps {
   onCategorySelect: (categoryName: string) => void;
@@ -33,7 +34,7 @@ export default function CategoryScreen({ onCategorySelect, onBack, onNavigateHom
 
   return (
     <div className="relative size-full">
-      <Category />
+      <CategoryComponent />
       
       {/* Invisible clickable overlays for each category card */}
       {categories.map((category) => (
@@ -49,9 +50,11 @@ export default function CategoryScreen({ onCategorySelect, onBack, onNavigateHom
       {/* Back button overlay */}
       <button
         onClick={onBack}
-        className="absolute left-[16px] top-[55px] size-[24px] bg-transparent border-none cursor-pointer z-10"
+        className="absolute left-[16px] top-[50px] bg-white rounded-full p-2 shadow-md border-none cursor-pointer z-50 hover:bg-gray-100 transition-colors"
         aria-label="Go back"
-      />
+      >
+        <ArrowLeft className="w-[24px] h-[24px] text-[#37474f]" strokeWidth={2.5} />
+      </button>
       
       {/* Speaker icon overlay - make it clickable */}
       <button

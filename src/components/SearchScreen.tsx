@@ -2,7 +2,7 @@ import { useState } from 'react';
 import svgPaths from "../imports/svg-4uyj5h7o85";
 import { imgMain1 } from "../imports/svg-4o5lf";
 import imgMain2 from "figma:asset/db4e58fac23dd6eaeefc5f9b23a040409692e76a.png";
-import { Filter } from 'lucide-react';
+import { Filter, Search, Mic as MicIcon } from 'lucide-react';
 import { toast } from 'sonner@2.0.3';
 import { useLanguage } from '../contexts/LanguageContext';
 import { startVoiceInput, isSpeechRecognitionSupported } from '../utils/voiceInput';
@@ -11,6 +11,8 @@ import { Product, categoryProducts } from '../data/categoryProducts';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import FilterModal, { FilterState } from './FilterModal';
 import BottomNavigation from './BottomNavigation';
+import { ShoppingCart } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 
 interface SearchScreenProps {
   onBack: () => void;
@@ -153,38 +155,32 @@ interface ProductCardProps {
 }
 
 function ProductCard({ product, onAddToCart }: ProductCardProps) {
+  const { language } = useLanguage();
+  
   return (
     <div className="h-[164px] relative shrink-0 w-[376px]" data-name="list/product/normal">
-      <div className="absolute bg-white bottom-[1.22%] left-0 right-[0.27%] top-0" />
-      <div className="absolute inset-[12.8%_64.89%_13.41%_4.52%] rounded-[9px]">
-        <ImageWithFallback 
-          alt={product.name} 
-          className="absolute inset-0 max-w-none object-50%-50% object-cover pointer-events-none rounded-[9px] size-full" 
-          src={product.image} 
-        />
+      <div className="absolute inset-[12.8%_64.89%_13.41%_4.52%]" data-name="Rectangle">
+        <img alt={product.name} className="absolute inset-0 max-w-none object-50%-50% object-cover pointer-events-none rounded-[9px] size-full" src={product.image} />
       </div>
       <div className="absolute bottom-0 left-[0.27%] right-0 top-[98.78%]" data-name="divider">
-        <div className="absolute bottom-[-0.07%] left-[-0.13%] right-0 top-[-0.07%]">
-          <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 376 2">
-            <path d={svgPaths.pcffcb00} id="divider" stroke="var(--stroke-0, #F0F0F0)" strokeLinecap="square" />
-          </svg>
-        </div>
+        <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 376 2">
+          <path d={svgPaths.pcffcb00} id="divider" stroke="var(--stroke-0, #F0F0F0)" strokeLinecap="square" />
+        </svg>
       </div>
-      <p className="absolute bottom-1/2 font-['Poppins:Medium',sans-serif] leading-[normal] left-[39.63%] not-italic right-[6.38%] text-[#37474f] text-[16px] top-[16.46%] tracking-[0.6px]">{product.name}</p>
-      <p className="absolute font-['Poppins:SemiBold',sans-serif] inset-[65.24%_42.29%_16.46%_39.63%] leading-[normal] not-italic text-[#f37a20] text-[20px] text-nowrap whitespace-pre">Rs {product.price}</p>
+      {/* Product name - single line */}
+      <p className="absolute font-['Poppins:Medium',sans-serif] left-[149px] top-[27px] leading-[normal] not-italic text-[#37474f] text-[16px] tracking-[0.6px]">
+        {language === 'urdu' ? product.nameUrdu : product.name}
+      </p>
+      {/* Price - below name */}
+      <p className="absolute font-['Poppins:SemiBold',sans-serif] left-[149px] top-[107px] leading-[normal] not-italic text-[#f37a20] text-[20px] text-nowrap whitespace-pre">Rs {product.price}</p>
+      {/* Add to Cart button - longer */}
       <button 
         onClick={() => onAddToCart(product)}
-        className="absolute bg-[#ffd037] inset-[59.76%_4.52%_18.9%_71.81%] rounded-[7px]"
+        className="absolute bg-[#ffd037] left-[292px] top-[98px] w-[68px] h-[35px] rounded-[7px] flex items-center justify-center gap-1 hover:bg-[#ffc020] transition-colors border-none cursor-pointer"
         data-name="buttons/web/solid/text + symbol/symbol → text"
       >
-        <div className="absolute left-[17px] size-[14px] top-[calc(50%+0.5px)] translate-y-[-50%]" data-name="action/bag_24px">
-          <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 14 14">
-            <g id="action/bag_24px ">
-              <path d={svgPaths.p14bc6dd0} fill="var(--fill-0, black)" id="Vector" stroke="var(--stroke-0, black)" strokeLinejoin="round" strokeWidth="0.35" />
-            </g>
-          </svg>
-        </div>
-        <p className="absolute capitalize font-['Poppins:Medium',sans-serif] leading-[normal] left-[40px] not-italic text-[12px] text-black text-nowrap top-[calc(50%-8.5px)] whitespace-pre">{`Add `}</p>
+        <ShoppingCart className="w-[16px] h-[16px] text-[#37474f]" strokeWidth={2} />
+        <p className="font-['Poppins:Medium',sans-serif] text-[11px] text-black">Add to Cart</p>
       </button>
     </div>
   );
@@ -351,7 +347,12 @@ export default function SearchScreen({
         toast.success(`${t('searchingFor') || 'Searching for'}: ${transcript}`);
       },
       onError: (error) => {
-        toast.error(error);
+        // Show microphone access errors as warning, not error
+        if (error.includes('Microphone access denied')) {
+          toast.warning(error);
+        } else {
+          toast.error(error);
+        }
       },
       language: language === 'urdu' ? 'ur-PK' : 'en-US'
     });
@@ -421,8 +422,17 @@ export default function SearchScreen({
       <ComponentsMobileAppbarPrimary />
       <BarsStatusBarIPhoneLight />
       
+      {/* Back Button - highly visible */}
+      <button
+        onClick={onBack}
+        className="absolute left-[16px] top-[55px] z-50 bg-white rounded-full p-2 shadow-md border-none cursor-pointer hover:bg-gray-100 transition-colors"
+        aria-label="Go back"
+      >
+        <ArrowLeft className="w-[24px] h-[24px] text-[#37474f]" strokeWidth={2.5} />
+      </button>
+      
       {/* Search Input */}
-      <div className="absolute h-[52px] left-[54px] top-[55px] w-[306px]">
+      <div className="absolute h-[52px] left-[56px] top-[55px] w-[304px]">
         <div className="absolute inset-0 overflow-clip">
           <div className="absolute bg-[#f0f1f2] bottom-[3.45%] left-0 right-0 rounded-tl-[8px] rounded-tr-[8px] top-0" data-name="Rectangle" />
           <div className="absolute bottom-0 left-[0.3%] right-[0.3%] top-[96.55%]" data-name="Line">
@@ -432,22 +442,25 @@ export default function SearchScreen({
               </svg>
             </div>
           </div>
-          <div className="absolute h-[39px] left-[16px] overflow-clip top-[calc(50%-2.5px)] translate-y-[-50%] w-[208px]" data-name="Group">
-            <ActionSearch24Px />
-            <p className="absolute font-['Poppins:Regular',sans-serif] leading-[normal] left-[36px] not-italic opacity-[0.87] text-[#ffd037] text-[12px] top-0 w-[196px]">Search</p>
+          <div className="absolute h-[39px] left-[16px] overflow-clip top-[calc(50%-2.5px)] translate-y-[-50%] w-[250px]" data-name="Group">
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => handleSearchChange(e.target.value)}
-              placeholder=""
-              className="absolute font-['Poppins:Regular',sans-serif] leading-[normal] left-[36px] not-italic text-[#37474f] text-[16px] text-nowrap top-[15px] bg-transparent outline-none border-none w-[160px] whitespace-pre"
+              placeholder="Search"
+              className="absolute font-['Poppins:Regular',sans-serif] leading-[normal] left-[8px] not-italic text-[#37474f] text-[16px] top-[50%] translate-y-[-50%] bg-transparent outline-none border-none w-[220px] placeholder:text-[#ffd037] placeholder:text-[16px] placeholder:opacity-[0.87]"
             />
           </div>
+          {/* Voice Search Button - inside search bar */}
+          <button 
+            onClick={handleVoiceInput}
+            className="absolute right-[12px] top-[50%] translate-y-[-50%] p-0 bg-transparent border-none cursor-pointer z-20"
+            aria-label="Voice search"
+          >
+            <MicIcon className="w-[20px] h-[20px] text-[#37474f]" strokeWidth={2} />
+          </button>
         </div>
       </div>
-
-      <Mic onClick={handleVoiceInput} />
-      <ComponentsMobileAppbarSecondery onBack={onBack} />
 
       {/* Filter Button */}
       {showResults && (

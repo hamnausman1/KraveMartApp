@@ -2,14 +2,17 @@ import { useState } from 'react';
 import svgPaths from '../imports/svg-2h47n1ddb9';
 import imgMain2 from "figma:asset/db4e58fac23dd6eaeefc5f9b23a040409692e76a.png";
 import imgOval from "figma:asset/6b7d77eaeddf8ebbf8ae87f61d1caeb7a4bf72d0.png";
+import imgSpeaker from "figma:asset/d1a81c329997884332855549bf84957646c3655b.png";
 import { imgMain1 } from "../imports/svg-g538o";
 import LogoutAlertDialog from './LogoutAlertDialog';
 import { useLanguage } from '../contexts/LanguageContext';
 import BottomNavigation from './BottomNavigation';
 import { speak } from '../utils/textToSpeech';
 import { ttsMessages } from '../utils/ttsMessages';
+import { ChevronRight } from 'lucide-react';
 
 interface AccountScreenProps {
+  onBack?: () => void;
   onNavigateHome: () => void;
   onNavigateSearch: () => void;
   onNavigateCart: () => void;
@@ -106,34 +109,38 @@ interface MenuItemProps {
 
 function MenuItem({ icon, label, onClick, iconColor = '#37474F', showDivider = true }: MenuItemProps) {
   return (
-    <button onClick={onClick} className="w-full bg-white rounded-[8px] h-[67px] mb-[-1px] relative">
-      <div className="absolute content-stretch flex items-center left-[7px] overflow-clip top-[calc(50%-0.5px)] translate-y-[-50%]">
-        <div className="box-border content-stretch flex gap-[10px] items-center overflow-clip p-[10px] relative shrink-0">
-          {icon}
+    <div className="w-full bg-white rounded-[8px] h-[67px] mb-[-1px] relative">
+      <button 
+        onClick={onClick}
+        className="absolute inset-0 w-full h-full bg-transparent border-none cursor-pointer text-left"
+      >
+        <div className="absolute content-stretch flex items-center left-[7px] overflow-clip top-[calc(50%-0.5px)] translate-y-[-50%]">
+          <div className="box-border content-stretch flex gap-[10px] items-center overflow-clip p-[10px] relative shrink-0">
+            {icon}
+          </div>
+          <div className="box-border content-stretch flex gap-[10px] items-center overflow-clip p-[10px] relative shrink-0">
+            <p className="font-['Poppins:Medium',sans-serif] leading-[normal] not-italic relative shrink-0 text-[#37474f] text-[14px] text-nowrap whitespace-pre">{label}</p>
+          </div>
         </div>
-        <div className="box-border content-stretch flex gap-[10px] items-center overflow-clip p-[10px] relative shrink-0">
-          <p className="font-['Poppins:Medium',sans-serif] leading-[normal] not-italic relative shrink-0 text-[#37474f] text-[14px] text-nowrap whitespace-pre">{label}</p>
+        
+        <div className="absolute right-[16px] top-[calc(50%-10px)]">
+          <ChevronRight className="w-[20px] h-[20px] text-black" strokeWidth={2} />
         </div>
-      </div>
-      
-      <div className="absolute right-[16px] size-[16px] top-[calc(50%-8px)]">
-        <svg className="block size-full" fill="none" viewBox="0 0 16 16">
-          <path d="M6 3L11 8L6 13" stroke="#37474F" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
-        </svg>
-      </div>
+      </button>
 
       {showDivider && (
-        <div className="absolute bottom-[-1px] h-[2px] left-[0.27%] right-[-0.27%]">
+        <div className="absolute bottom-[-1px] h-[2px] left-[0.27%] right-[-0.27%] pointer-events-none">
           <svg className="block size-full" fill="none" preserveAspectRatio="none" viewBox="0 0 376 2">
             <path d={svgPaths.pcffcb00} stroke="#F0F0F0" strokeLinecap="square" />
           </svg>
         </div>
       )}
-    </button>
+    </div>
   );
 }
 
 export default function AccountScreen({
+  onBack,
   onNavigateHome,
   onNavigateSearch,
   onNavigateCart,
@@ -168,6 +175,14 @@ export default function AccountScreen({
     speak(message, language);
   };
 
+  const handleNameSpeakerClick = () => {
+    speak("Hamna Usman", language);
+  };
+
+  const handlePhoneSpeakerClick = () => {
+    speak("03XX-XXXXXXX", language);
+  };
+
   return (
     <div className="bg-white relative size-full" dir={language === 'urdu' ? 'rtl' : 'ltr'}>
       <MaskGroup />
@@ -176,15 +191,24 @@ export default function AccountScreen({
       {/* Header */}
       <div className="absolute h-[88px] left-px top-0 w-[375px]">
         <p className="absolute font-['Poppins:SemiBold',sans-serif] leading-[normal] left-[16px] not-italic text-[#37474f] text-[20px] text-nowrap top-[calc(50%+7.5px)] whitespace-pre">{t('account')}</p>
+        <button 
+          onClick={handleSpeakerClick}
+          className="absolute right-[16px] top-[51px] cursor-pointer bg-transparent border-none p-0"
+          aria-label="Read account screen information"
+        >
+          <img alt="" className="w-[16px] h-[16px]" src={imgSpeaker} />
+        </button>
       </div>
 
       {/* Profile Section */}
-      <div className="absolute h-[51px] left-[18px] overflow-clip top-[122px] w-[258px]">
-        <div className="absolute bottom-0 left-0 right-[80.62%] top-[1.96%]">
+      <div className="absolute h-[51px] left-[18px] overflow-visible top-[122px] w-[340px]">
+        <div className="absolute bottom-0 left-0 w-[50px] top-[1.96%]">
           <img alt="" className="block max-w-none size-full" height="50" src={imgOval} width="50" />
         </div>
-        <p className="absolute font-['Poppins:SemiBold',sans-serif] leading-[normal] left-[25.58%] not-italic right-[20.93%] text-[#3f3f3f] text-[18px] text-nowrap top-[calc(50%-25.5px)] whitespace-pre">Hamna Usman</p>
-        <p className="absolute bottom-[3.92%] font-['Poppins:Medium',sans-serif] leading-[23px] left-[25.58%] not-italic right-0 text-[#555555] text-[15px] top-[52.94%]">03XX-XXXXXXX</p>
+        
+        <p className="absolute left-[66px] top-0 font-['Poppins:SemiBold',sans-serif] leading-[normal] not-italic text-[#3f3f3f] text-[18px] text-nowrap whitespace-pre">Hamna Usman</p>
+        
+        <p className="absolute left-[66px] bottom-[2px] font-['Poppins:Medium',sans-serif] leading-[23px] not-italic text-[#555555] text-[15px]">03XX-XXXXXXX</p>
       </div>
 
       {/* Scrollable Menu Items */}

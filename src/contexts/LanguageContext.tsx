@@ -189,6 +189,7 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Product Details
     'addToCart': 'Add to Cart',
+    'productAddedToCart': 'Product added to cart!',
     'productDetails': 'Product Details',
     'description': 'Description',
     'reviews': 'Reviews',
@@ -442,7 +443,7 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Simple Password Screen
     'enterThePassword': 'پاس ورڈ درج کریں',
-    'pleaseEnterPasswordToProceed': 'جاری رکھنے کے لیے پاس ورڈ در�� کریں',
+    'pleaseEnterPasswordToProceed': 'جاری رکھنے کے لیے پاس ورڈ درج کریں',
     'forgotPassword': 'پاس ورڈ بھول گئے؟',
     
     // Add Address Screen
@@ -552,6 +553,7 @@ const translations: Record<Language, Record<string, string>> = {
     
     // Product Details
     'addToCart': 'ٹوکری میں شامل کریں',
+    'productAddedToCart': 'مصنوعات ٹوکری میں شامل ہو گئی!',
     'productDetails': 'مصنوعات کی تفصیلات',
     'description': 'تفصیل',
     'reviews': 'جائزے',

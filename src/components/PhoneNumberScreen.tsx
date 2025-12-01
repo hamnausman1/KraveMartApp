@@ -315,23 +315,22 @@ export default function PhoneNumberScreen({ onNext }: PhoneNumberScreenProps) {
   const { t, language } = useLanguage();
 
   // Validate Pakistani phone number (must start with 03 and be 11 digits)
-  const validatePhoneNumber = (number: string): boolean => {
+  const validatePhoneNumber = (number: string): { isValid: boolean; errorMessage: string } => {
     // Remove any non-digit characters
     const cleanNumber = number.replace(/\D/g, '');
     
     // Check if it starts with 03 and has exactly 11 digits
     if (!cleanNumber.startsWith('03')) {
-      setError(language === 'urdu' ? 'نمبر 03 سے شروع ہونا چاہیے' : 'Number must start with 03');
-      return false;
+      const errorMsg = language === 'urdu' ? 'نمبر 03 سے شروع ہونا چاہیے' : 'Number must start with 03';
+      return { isValid: false, errorMessage: errorMsg };
     }
     
     if (cleanNumber.length !== 11) {
-      setError(language === 'urdu' ? 'نمبر بالکل 11 ہندسوں کا ہونا چاہیے' : 'Number must be exactly 11 digits');
-      return false;
+      const errorMsg = language === 'urdu' ? 'نمبر بالکل 11 ہندسوں کا ہونا چاہیے' : 'Number must be exactly 11 digits';
+      return { isValid: false, errorMessage: errorMsg };
     }
     
-    setError('');
-    return true;
+    return { isValid: true, errorMessage: '' };
   };
 
   const handlePhoneNumberChange = (value: string) => {
@@ -344,15 +343,18 @@ export default function PhoneNumberScreen({ onNext }: PhoneNumberScreenProps) {
   const handleNext = () => {
     const trimmedNumber = phoneNumber.trim();
     if (!trimmedNumber) {
-      setError(language === 'urdu' ? 'براہ کرم فون نمبر درج کریں' : 'Please enter a phone number');
-      toast.error(language === 'urdu' ? 'براہ کرم فون نمبر درج کریں' : 'Please enter a phone number');
+      const errorMsg = language === 'urdu' ? 'براہ کرم فون نمبر درج کریں' : 'Please enter a phone number';
+      setError(errorMsg);
+      toast.error(errorMsg);
       return;
     }
 
-    if (validatePhoneNumber(trimmedNumber)) {
+    const validation = validatePhoneNumber(trimmedNumber);
+    if (validation.isValid) {
       onNext(trimmedNumber);
     } else {
-      toast.error(error);
+      setError(validation.errorMessage);
+      toast.error(validation.errorMessage);
     }
   };
 

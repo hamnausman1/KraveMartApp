@@ -7,7 +7,9 @@ import SimplePasswordScreen from './components/SimplePasswordScreen';
 import OTPScreen from './components/OTPScreen';
 import HomeScreenWrapper from './components/HomeScreenWrapper';
 import CategoryScreen from './components/CategoryScreen';
+import AllBrandsScreen from './components/AllBrandsScreen';
 import CategoryProductsWrapper from './components/CategoryProductsWrapper';
+import BrandProductsWrapper from './components/BrandProductsWrapper';
 import ProductDetailsWrapper from './components/ProductDetailsWrapper';
 import MyAddresses from './components/MyAddresses';
 import AddAddress from './components/AddAddress';
@@ -38,7 +40,7 @@ import { LanguageProvider } from './contexts/LanguageContext';
 import { Product } from './data/categoryProducts';
 import { Toaster } from './components/ui/sonner';
 
-type Screen = 'splash' | 'signin' | 'password' | 'phoneNumber' | 'simplePassword' | 'otp' | 'home' | 'categories' | 'categoryProducts' | 'productDetails' | 'myAddresses' | 'addAddress' | 'notifications' | 'cart' | 'account' | 'editProfile' | 'search' | 'paymentMethod' | 'orderConfirmation' | 'myOrders' | 'orderTracking' | 'orderDetails' | 'deliveryDetails' | 'realTimeTracking' | 'appSettings' | 'vouchers' | 'contactUs' | 'help' | 'chatBot' | 'chatButton';
+type Screen = 'splash' | 'signin' | 'password' | 'phoneNumber' | 'simplePassword' | 'otp' | 'home' | 'categories' | 'brands' | 'categoryProducts' | 'brandProducts' | 'productDetails' | 'myAddresses' | 'addAddress' | 'notifications' | 'cart' | 'account' | 'editProfile' | 'search' | 'paymentMethod' | 'orderConfirmation' | 'myOrders' | 'orderTracking' | 'orderDetails' | 'deliveryDetails' | 'realTimeTracking' | 'appSettings' | 'vouchers' | 'contactUs' | 'help' | 'chatBot' | 'chatButton';
 type Flow = 'signup' | 'login';
 
 function AppContent() {
@@ -47,6 +49,7 @@ function AppContent() {
   const [email, setEmail] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
+  const [selectedBrand, setSelectedBrand] = useState('');
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [editAddressId, setEditAddressId] = useState<string | undefined>();
   const [paymentMethod, setPaymentMethod] = useState('cod');
@@ -168,10 +171,15 @@ function AppContent() {
         {currentScreen === 'home' && (
           <HomeScreenWrapper
             onCategoriesClick={() => setCurrentScreen('categories')}
+            onBrandsClick={() => setCurrentScreen('brands')}
             onLocationClick={() => setCurrentScreen('myAddresses')}
             onCategoryClick={(categoryName) => {
               setSelectedCategory(categoryName);
               setCurrentScreen('categoryProducts');
+            }}
+            onBrandClick={(brandName) => {
+              setSelectedBrand(brandName);
+              setCurrentScreen('brandProducts');
             }}
             onNavigateCart={() => setCurrentScreen('cart')}
             onNavigateNotifications={() => setCurrentScreen('notifications')}
@@ -195,10 +203,41 @@ function AppContent() {
           />
         )}
 
+        {currentScreen === 'brands' && (
+          <AllBrandsScreen
+            onBrandSelect={(brandName) => {
+              setSelectedBrand(brandName);
+              setCurrentScreen('brandProducts');
+            }}
+            onBack={() => setCurrentScreen('home')}
+            onNavigateHome={() => setCurrentScreen('home')}
+            onNavigateSearch={() => setCurrentScreen('search')}
+            onNavigateCart={() => setCurrentScreen('cart')}
+            onNavigateNotifications={() => setCurrentScreen('notifications')}
+            onNavigateAccount={() => setCurrentScreen('account')}
+          />
+        )}
+
         {currentScreen === 'categoryProducts' && (
           <CategoryProductsWrapper
             categoryName={selectedCategory}
             onBack={() => setCurrentScreen('categories')}
+            onProductClick={(product) => {
+              setSelectedProduct(product);
+              setCurrentScreen('productDetails');
+            }}
+            onNavigateHome={() => setCurrentScreen('home')}
+            onNavigateCart={() => setCurrentScreen('cart')}
+            onNavigateSearch={() => setCurrentScreen('search')}
+            onNavigateNotifications={() => setCurrentScreen('notifications')}
+            onNavigateAccount={() => setCurrentScreen('account')}
+          />
+        )}
+
+        {currentScreen === 'brandProducts' && (
+          <BrandProductsWrapper
+            brandName={selectedBrand}
+            onBack={() => setCurrentScreen('brands')}
             onProductClick={(product) => {
               setSelectedProduct(product);
               setCurrentScreen('productDetails');
@@ -232,6 +271,11 @@ function AppContent() {
               setEditAddressId(id);
               setCurrentScreen('addAddress');
             }}
+            onNavigateHome={() => setCurrentScreen('home')}
+            onNavigateSearch={() => setCurrentScreen('search')}
+            onNavigateCart={() => setCurrentScreen('cart')}
+            onNavigateNotifications={() => setCurrentScreen('notifications')}
+            onNavigateAccount={() => setCurrentScreen('account')}
           />
         )}
 

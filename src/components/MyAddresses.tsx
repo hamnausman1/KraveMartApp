@@ -4,6 +4,8 @@ import imgImage43 from "figma:asset/d1a81c329997884332855549bf84957646c3655b.png
 import { imgMain1 } from "../imports/svg-twsyg";
 import { useAddresses } from "../contexts/AddressContext";
 import { useLanguage } from "../contexts/LanguageContext";
+import { speak } from '../utils/textToSpeech';
+import BottomNavigation from './BottomNavigation';
 
 function Group6() {
   return (
@@ -352,16 +354,47 @@ interface MyAddressesProps {
   onBack: () => void;
   onAddNew: () => void;
   onEdit: (id: string) => void;
+  onNavigateHome?: () => void;
+  onNavigateSearch?: () => void;
+  onNavigateCart?: () => void;
+  onNavigateNotifications?: () => void;
+  onNavigateAccount?: () => void;
 }
 
-export default function MyAddresses({ onBack, onAddNew, onEdit }: MyAddressesProps) {
+export default function MyAddresses({ onBack, onAddNew, onEdit, onNavigateHome, onNavigateSearch, onNavigateCart, onNavigateNotifications, onNavigateAccount }: MyAddressesProps) {
   const { addresses, deleteAddress } = useAddresses();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   const handleDelete = (id: string) => {
     if (window.confirm(t('are_you_sure_delete_address'))) {
       deleteAddress(id);
     }
+  };
+
+  const handleSpeakerClick = () => {
+    let text = '';
+    
+    if (language === 'english') {
+      if (addresses.length === 0) {
+        text = "My Addresses. You have no saved addresses. Click the add new address button to add your first delivery address.";
+      } else {
+        const addressList = addresses.map((addr, index) => 
+          `${index + 1}. ${addr.label}. ${addr.address}`
+        ).join('. ');
+        text = `My Addresses. You have ${addresses.length} saved ${addresses.length === 1 ? 'address' : 'addresses'}. ${addressList}. You can edit or delete any address, or add a new one.`;
+      }
+    } else {
+      if (addresses.length === 0) {
+        text = "میرے پتے۔ آپ کے پاس کوئی محفوظ شدہ پتہ نہیں ہے۔ اپنا پہلا ڈیلیوری پتہ شامل کرنے کے لیے نیا پتہ شامل کریں بٹن پر کلک کریں۔";
+      } else {
+        const addressList = addresses.map((addr, index) => 
+          `${index + 1}۔ ${addr.label}۔ ${addr.address}`
+        ).join('۔ ');
+        text = `میرے پتے۔ آپ کے پاس ${addresses.length} محفوظ شدہ پتے ہیں۔ ${addressList}۔ آپ کسی بھی پتے میں ترمیم یا حذف کر سکتے ہیں، یا نیا شامل کر سکتے ہیں۔`;
+      }
+    }
+    
+    speak(text, language);
   };
 
   return (
@@ -390,13 +423,24 @@ export default function MyAddresses({ onBack, onAddNew, onEdit }: MyAddressesPro
         ))
       )}
       
-      <Navbar />
-      <Tabs onHomeClick={onBack} />
-      <Menu />
-      <IconPerson />
-      <div className="absolute left-[347px] size-[14px] top-[55px]" data-name="image 43">
+      <button 
+        onClick={handleSpeakerClick}
+        className="absolute left-[347px] size-[14px] top-[55px] cursor-pointer bg-transparent border-none p-0 z-30"
+        aria-label="Read addresses information"
+      >
         <img alt="" className="absolute inset-0 max-w-none object-50%-50% object-cover pointer-events-none size-full" src={imgImage43} />
-      </div>
+      </button>
+      
+      {onNavigateHome && onNavigateSearch && onNavigateCart && onNavigateNotifications && onNavigateAccount && (
+        <BottomNavigation
+          currentPage="account"
+          onNavigateHome={onNavigateHome}
+          onNavigateSearch={onNavigateSearch}
+          onNavigateCart={onNavigateCart}
+          onNavigateNotifications={onNavigateNotifications}
+          onNavigateAccount={onNavigateAccount}
+        />
+      )}
     </div>
   );
 }

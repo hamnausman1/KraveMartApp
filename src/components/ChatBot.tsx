@@ -9,6 +9,7 @@ import { useOrders } from '../contexts/OrderContext';
 import { useLanguage } from '../contexts/LanguageContext';
 import { startVoiceInput, isSpeechRecognitionSupported } from '../utils/voiceInput';
 import { toast } from 'sonner@2.0.3';
+import { speak } from '../utils/textToSpeech';
 
 interface ChatBotProps {
   isOpen: boolean;
@@ -180,6 +181,7 @@ export default function ChatBot({ isOpen, onClose }: ChatBotProps) {
         timestamp: new Date()
       };
       setMessages(prev => [...prev, botMessage]);
+      speak(botResponse);
     }, 1000);
   };
 
@@ -234,39 +236,56 @@ export default function ChatBot({ isOpen, onClose }: ChatBotProps) {
     });
   };
 
+  const handleSpeakerClick = () => {
+    const chatContent = messages.map(msg => 
+      `${msg.sender === 'bot' ? 'Support' : 'You'}: ${msg.text}`
+    ).join('. ');
+    
+    const text = language === 'english'
+      ? `Chat Support. ${chatContent}. You can send messages, use voice input, or end the chat.`
+      : `چیٹ سپورٹ۔ ${chatContent}۔ آپ پیغامات بھیج سکتے ہیں، وائس ان پٹ استعمال کر سکتے ہیں، یا چیٹ ختم کر سکتے ہیں۔`;
+    
+    speak(text, language);
+  };
+
   if (!isOpen) return null;
 
   const latestOrder = orders.length > 0 ? orders[0] : null;
+  const messagesTopPosition = latestOrder ? 'top-[210px]' : 'top-[110px]';
 
   return (
-    <div className="absolute inset-0 z-50 bg-white">
+    <div className="absolute inset-0 z-50 bg-white overflow-hidden">
       <MaskGroup />
       <BarsStatusBarIPhoneLight />
 
       {/* Header */}
-      <div className="absolute h-[88px] left-px top-0 w-[375px]">
+      <div className="absolute h-[88px] left-0 top-0 w-full z-20">
         <p className="absolute font-['Poppins:SemiBold',sans-serif] leading-[normal] left-[58px] not-italic text-[#37474f] text-[20px] text-nowrap top-[47.32px] whitespace-pre">{t('chatWithUs')}</p>
-        <button onClick={onClose} className="absolute left-[16px] size-[24px] top-[47.32px]">
+        <button onClick={onClose} className="absolute left-[16px] size-[24px] top-[47.32px] z-30">
           <svg className="block size-full" fill="none" viewBox="0 0 24 24">
             <path d={svgPaths.p6a58300} fill="#37474F" />
           </svg>
         </button>
-        <button className="absolute left-[342px] size-[16px] top-[54px]">
+        <button 
+          onClick={handleSpeakerClick}
+          className="absolute left-[342px] size-[16px] top-[54px] cursor-pointer bg-transparent border-none p-0 z-30"
+          aria-label="Read chat messages"
+        >
           <img alt="" className="absolute inset-0 max-w-none object-50%-50% object-cover pointer-events-none size-full" src={imgImage32} />
         </button>
       </div>
 
       {/* Order Card */}
       {latestOrder && (
-        <div className="absolute left-[16px] right-[16px] top-[108px] bg-[rgba(243,122,32,0.14)] rounded-[12px] p-[16px] h-[86px]">
+        <div className="absolute left-[16px] right-[16px] top-[100px] bg-[rgba(243,122,32,0.14)] rounded-[12px] p-[16px] z-10">
           <div className="flex items-start justify-between">
             <div className="flex items-start gap-[12px]">
-              <div className="bg-[#F37A20] rounded-full size-[44px] flex items-center justify-center">
+              <div className="bg-[#F37A20] rounded-full size-[44px] flex items-center justify-center flex-shrink-0">
                 <svg className="size-[24px]" fill="none" viewBox="0 0 24 24">
                   <path clipRule="evenodd" d={svgPaths.p30cae750} fill="white" fillRule="evenodd" />
                 </svg>
               </div>
-              <div>
+              <div className="flex-1 min-w-0">
                 <p className="font-['Poppins:Medium',sans-serif] text-[16px] text-[#37474f]">
                   Order #{latestOrder.orderId}
                 </p>
@@ -278,7 +297,7 @@ export default function ChatBot({ isOpen, onClose }: ChatBotProps) {
                 </p>
               </div>
             </div>
-            <p className="font-['Poppins:SemiBold',sans-serif] text-[20px] text-[#f37a20]">
+            <p className="font-['Poppins:SemiBold',sans-serif] text-[20px] text-[#f37a20] flex-shrink-0">
               Rs {latestOrder.total}
             </p>
           </div>
@@ -286,7 +305,7 @@ export default function ChatBot({ isOpen, onClose }: ChatBotProps) {
       )}
 
       {/* Messages Container */}
-      <div className="absolute left-0 right-0 top-[220px] bottom-[140px] overflow-y-auto px-[16px] space-y-3">
+      <div className={`absolute left-0 right-0 ${messagesTopPosition} bottom-[180px] overflow-y-auto px-[16px] space-y-3 pb-4`}>
         {messages.map((message) => (
           <div
             key={message.id}
@@ -313,7 +332,7 @@ export default function ChatBot({ isOpen, onClose }: ChatBotProps) {
 
       {/* Quick Replies */}
       {showQuickReplies && messages.length === 1 && (
-        <div className="absolute left-[16px] right-[16px] bottom-[160px] flex flex-wrap gap-2 justify-center">
+        <div className="absolute left-[16px] right-[16px] bottom-[190px] flex flex-wrap gap-2 justify-center">
           {quickReplies.map((reply, index) => (
             <button
               key={index}
@@ -329,7 +348,7 @@ export default function ChatBot({ isOpen, onClose }: ChatBotProps) {
       )}
 
       {/* Input Area */}
-      <div className="absolute left-[16px] right-[16px] bottom-[80px]">
+      <div className="absolute left-[16px] right-[16px] bottom-[118px] z-20">
         <div className="bg-[#f0f1f2] rounded-[8px] h-[48px] px-[16px] flex items-center gap-[12px]">
           <input
             type="text"
@@ -337,8 +356,7 @@ export default function ChatBot({ isOpen, onClose }: ChatBotProps) {
             onChange={(e) => setInputMessage(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
             placeholder={t('writeMessage')}
-            className="flex-1 bg-transparent outline-none font-['Poppins:Regular',sans-serif] text-[16px] text-[#37474f]"
-          />
+            className="flex-1 bg-transparent outline-none font-['Poppins:Regular',sans-serif] text-[16px] text-[#37474f]"/>
           <button className="text-[#37474f] opacity-70">
             <Camera className="w-5 h-5" />
           </button>
@@ -357,13 +375,13 @@ export default function ChatBot({ isOpen, onClose }: ChatBotProps) {
       {/* End Chat Button */}
       <button
         onClick={handleEndChat}
-        className="absolute left-[16px] right-[16px] bottom-[20px] bg-[#f37a20] h-[48px] rounded-[8px] flex items-center justify-center"
+        className="absolute left-[16px] right-[16px] bottom-[58px] bg-[#f37a20] h-[48px] rounded-[8px] flex items-center justify-center z-20"
       >
         <p className="font-['Poppins:Medium',sans-serif] text-[16px] text-white">{t('endChat')}</p>
       </button>
 
       {/* Home Indicator */}
-      <div className="absolute bottom-[4px] left-1/2 translate-x-[-50%]">
+      <div className="absolute bottom-[12px] left-1/2 translate-x-[-50%] z-30">
         <div className="bg-black h-[5px] rounded-[100px] w-[134px]" />
       </div>
     </div>

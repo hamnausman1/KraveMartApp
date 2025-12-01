@@ -106,7 +106,7 @@ function ComponentsMobileAppbarPrimary1() {
   
   return (
     <div className="absolute h-[88px] left-[33px] top-0 w-[375px]" data-name="components/mobile/appbar/primary">
-      <p className="absolute font-['Poppins:SemiBold',sans-serif] leading-[normal] left-[16px] not-italic text-[#37474f] text-[20px] text-nowrap top-[calc(50%+7.5px)] whitespace-pre">{t('allCategories')}</p>
+      <p className="absolute font-['Poppins:SemiBold',sans-serif] leading-[normal] left-[24px] not-italic text-[#37474f] text-[20px] text-nowrap top-[calc(50%+7.5px)] whitespace-pre">{t('allCategories')}</p>
     </div>
   );
 }
@@ -192,7 +192,7 @@ function CardCategory4() {
           src="https://images.unsplash.com/photo-1748765968997-ba9bae9cfd7b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzbmFja3MlMjBjaGlwcyUyMGNvbmZlY3Rpb25lcnl8ZW58MXx8fHwxNzYzOTcxMTQwfDA&ixlib=rb-4.1.0&q=80&w=400" 
         />
       </div>
-      <p className="absolute bottom-[-2.5%] font-['Poppins:Medium',sans-serif] leading-[normal] left-0 not-italic right-[0.61%] text-[#37474f] text-[13px] text-center top-[71.25%]">{t('snacksConfectioneries')}</p>
+      <p className="absolute bottom-[6.88%] font-['Poppins:Medium',sans-serif] leading-[normal] left-0 not-italic right-[0.61%] text-[#37474f] text-[13px] text-center top-[80.63%]">{t('snacksConfectioneries')}</p>
     </div>
   );
 }
@@ -419,7 +419,6 @@ export default function Category() {
       <CardCategory2 />
       <CardCategory3 />
       <CardCategory4 />
-      <Content />
       <NavigationArrowBackward24Px />
       <CardCategory5 />
       <Navbar />
